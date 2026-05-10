@@ -1,4 +1,5 @@
 import { useAuthStore } from "@/store/authStore";
+import { useThemeStore } from "@/store/themeStore";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -13,6 +14,7 @@ import {
 
 export default function LoginScreen() {
   const { login, isLoading, error, fieldErrors, clearErrors } = useAuthStore();
+  const isDark = useThemeStore((s) => s.mode === "dark");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -23,7 +25,7 @@ export default function LoginScreen() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-gray-50"
+      className={`flex-1 ${isDark ? "bg-gray-950" : "bg-gray-50"}`}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView
@@ -33,10 +35,10 @@ export default function LoginScreen() {
       >
         {/* Header */}
         <View className="mb-10">
-          <Text className="text-4xl font-bold text-gray-900 mb-2">
+          <Text className={`text-4xl font-bold mb-2 ${isDark ? "text-gray-100" : "text-gray-900"}`}>
             Issue Tracker
           </Text>
-          <Text className="text-base text-gray-500">
+          <Text className={`text-base ${isDark ? "text-gray-400" : "text-gray-500"}`}>
             Sign in to your account
           </Text>
         </View>
@@ -45,13 +47,14 @@ export default function LoginScreen() {
         <View className="gap-4">
           {/* Email */}
           <View className="gap-1">
-            <Text className="text-sm font-semibold text-gray-700">Email</Text>
+            <Text className={`text-sm font-semibold ${isDark ? "text-gray-300" : "text-gray-700"}`}>Email</Text>
             <TextInput
-              className={`bg-white border rounded-xl p-4 text-base text-gray-900 ${
-                fieldErrors.email ? "border-red-500" : "border-gray-300"
+              className={`border rounded-xl p-4 text-base ${
+                isDark ? "bg-gray-900 text-gray-100" : "bg-white text-gray-900"
+              } ${fieldErrors.email ? "border-red-500" : isDark ? "border-gray-700" : "border-gray-300"
               }`}
               placeholder="mewan@example.com"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={isDark ? "#6B7280" : "#9CA3AF"}
               value={email}
               onChangeText={(text) => {
                 setEmail(text);
@@ -69,18 +72,20 @@ export default function LoginScreen() {
 
           {/* Password */}
           <View className="gap-1">
-            <Text className="text-sm font-semibold text-gray-700">
+            <Text className={`text-sm font-semibold ${isDark ? "text-gray-300" : "text-gray-700"}`}>
               Password
             </Text>
             <View
-              className={`flex-row items-center bg-white border rounded-xl ${
-                fieldErrors.password ? "border-red-500" : "border-gray-300"
+              className={`flex-row items-center border rounded-xl ${
+                isDark ? "bg-gray-900" : "bg-white"
+              } ${
+                fieldErrors.password ? "border-red-500" : isDark ? "border-gray-700" : "border-gray-300"
               }`}
             >
               <TextInput
-                className="flex-1 p-4 text-base text-gray-900"
+                className={`flex-1 p-4 text-base ${isDark ? "text-gray-100" : "text-gray-900"}`}
                 placeholder="Enter your password"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={isDark ? "#6B7280" : "#9CA3AF"}
                 value={password}
                 onChangeText={(text) => {
                   setPassword(text);
@@ -128,13 +133,6 @@ export default function LoginScreen() {
               <Text className="text-white text-base font-bold">Sign In</Text>
             )}
           </Pressable>
-
-          {/* Demo hint */}
-          <View className="items-center mt-2">
-            <Text className="text-xs text-gray-400">
-              Demo: mewan@example.com / mewan123
-            </Text>
-          </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

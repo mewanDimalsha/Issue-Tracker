@@ -1,4 +1,5 @@
 import { useIssueStore } from "@/store/issueStore";
+import { useThemeStore } from "@/store/themeStore";
 import { Issue } from "@/types";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
@@ -22,6 +23,7 @@ export default function IssuesScreen() {
     isLoading,
     error,
   } = useIssueStore();
+  const isDark = useThemeStore((s) => s.mode === "dark");
 
   const [searchText, setSearchText] = useState("");
 
@@ -50,21 +52,33 @@ export default function IssuesScreen() {
   }, [debouncedSearch]);
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className={`flex-1 ${isDark ? "bg-gray-950" : "bg-gray-50"}`}>
       {/* Search bar */}
-      <View className="bg-white px-4 py-3 border-b border-gray-100">
+      <View
+        className={`px-4 py-3 border-b ${
+          isDark ? "bg-gray-900 border-gray-800" : "bg-white border-gray-100"
+        }`}
+      >
         <TextInput
-          className="bg-gray-100 rounded-xl px-4 py-3 text-base text-gray-900"
+          className={`rounded-xl px-4 py-3 text-base ${
+            isDark ? "bg-gray-800 text-gray-100" : "bg-gray-100 text-gray-900"
+          }`}
           placeholder="Search issues..."
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={isDark ? "#6B7280" : "#9CA3AF"}
           value={searchText}
           onChangeText={setSearchText}
         />
       </View>
 
       {/* Filters */}
-      <View className="bg-white px-4 py-2 border-b border-gray-100">
-        <Text className="text-xs font-semibold text-gray-500 mb-2">STATUS</Text>
+      <View
+        className={`px-4 py-2 border-b ${
+          isDark ? "bg-gray-900 border-gray-800" : "bg-white border-gray-100"
+        }`}
+      >
+        <Text className={`text-xs font-semibold mb-2 ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+          STATUS
+        </Text>
         <View className="flex-row gap-2 flex-wrap">
           {(["all", "open", "in_progress", "resolved", "closed"] as const).map(
             (status) => (
@@ -74,12 +88,18 @@ export default function IssuesScreen() {
                 className={`px-3 py-1 rounded-full border ${
                   filters.status === status
                     ? "bg-blue-500 border-blue-500"
-                    : "bg-white border-gray-300"
+                    : isDark
+                      ? "bg-gray-900 border-gray-700"
+                      : "bg-white border-gray-300"
                 }`}
               >
                 <Text
                   className={`text-xs font-semibold ${
-                    filters.status === status ? "text-white" : "text-gray-600"
+                    filters.status === status
+                      ? "text-white"
+                      : isDark
+                        ? "text-gray-300"
+                        : "text-gray-600"
                   }`}
                 >
                   {status === "all"
@@ -93,7 +113,7 @@ export default function IssuesScreen() {
           )}
         </View>
 
-        <Text className="text-xs font-semibold text-gray-500 mb-2 mt-3">
+        <Text className={`text-xs font-semibold mb-2 mt-3 ${isDark ? "text-gray-400" : "text-gray-500"}`}>
           PRIORITY
         </Text>
         <View className="flex-row gap-2 flex-wrap">
@@ -105,14 +125,18 @@ export default function IssuesScreen() {
                 className={`px-3 py-1 rounded-full border ${
                   filters.priority === priority
                     ? "bg-blue-500 border-blue-500"
-                    : "bg-white border-gray-300"
+                    : isDark
+                      ? "bg-gray-900 border-gray-700"
+                      : "bg-white border-gray-300"
                 }`}
               >
                 <Text
                   className={`text-xs font-semibold ${
                     filters.priority === priority
                       ? "text-white"
-                      : "text-gray-600"
+                      : isDark
+                        ? "text-gray-300"
+                        : "text-gray-600"
                   }`}
                 >
                   {priority.charAt(0).toUpperCase() + priority.slice(1)}
@@ -195,6 +219,7 @@ function useDebounce<T>(value: T, delay: number): T {
 }
 
 function IssueCard({ issue }: { issue: Issue }) {
+  const isDark = useThemeStore((s) => s.mode === "dark");
   const priorityConfig: Record<string, string> = {
     low: "bg-gray-100 text-gray-600",
     medium: "bg-yellow-100 text-yellow-700",
@@ -222,13 +247,15 @@ function IssueCard({ issue }: { issue: Issue }) {
 
   return (
     <Pressable
-      className="bg-white rounded-2xl p-4 border border-gray-100 active:opacity-70"
+      className={`rounded-2xl p-4 border active:opacity-70 ${
+        isDark ? "bg-gray-900 border-gray-800" : "bg-white border-gray-100"
+      }`}
       onPress={() => router.push(`/issue/${issue.id}`)}
     >
       {/* Title row */}
       <View className="flex-row items-start justify-between gap-2">
         <Text
-          className="text-gray-900 font-semibold text-base flex-1"
+          className={`font-semibold text-base flex-1 ${isDark ? "text-gray-100" : "text-gray-900"}`}
           numberOfLines={2}
         >
           {issue.title}
@@ -243,7 +270,7 @@ function IssueCard({ issue }: { issue: Issue }) {
       </View>
 
       {/* Description */}
-      <Text className="text-gray-500 text-sm mt-1" numberOfLines={2}>
+      <Text className={`text-sm mt-1 ${isDark ? "text-gray-400" : "text-gray-500"}`} numberOfLines={2}>
         {issue.description}
       </Text>
 
@@ -256,7 +283,7 @@ function IssueCard({ issue }: { issue: Issue }) {
             </Text>
           </View>
           {issue.assignee && (
-            <Text className="text-xs text-gray-400">{issue.assignee}</Text>
+            <Text className={`text-xs ${isDark ? "text-gray-500" : "text-gray-400"}`}>{issue.assignee}</Text>
           )}
           {issue.isDirty && (
             <Text className="text-xs text-yellow-600 font-semibold">
@@ -269,7 +296,7 @@ function IssueCard({ issue }: { issue: Issue }) {
             </Text>
           )}
         </View>
-        <Text className="text-xs text-gray-400">
+        <Text className={`text-xs ${isDark ? "text-gray-500" : "text-gray-400"}`}>
           {formatDate(issue.createdAt)}
         </Text>
       </View>

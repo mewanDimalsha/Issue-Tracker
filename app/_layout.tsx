@@ -1,18 +1,30 @@
 import { useAuthStore } from "@/store/authStore";
 import { router, Stack, useSegments } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "../global.css";
 
 function AuthGuard() {
   const user = useAuthStore((s) => s.user);
+  const [hasHydrated, setHasHydrated] = useState(
+    useAuthStore.persist.hasHydrated(),
+  );
   const segments = useSegments();
 
   useEffect(() => {
-    if (segments.length === 0) return;
-    const inAuthScreen = segments[0] === "login";
+    const unsubscribe = useAuthStore.persist.onFinishHydration(() => {
+      setHasHydrated(true);
+    });
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    if (!hasHydrated) return;
+    const currentSegment = segments[0];
+    if (!currentSegment) return;
+    const inAuthScreen = currentSegment === "login";
     if (!user && !inAuthScreen) router.replace("/login");
-    if (user && inAuthScreen) router.replace("/index");
-  }, [user, segments]);
+    if (user && inAuthScreen) router.replace("/(tabs)");
+  }, [user, segments, hasHydrated]);
 
   return (
     <Stack>

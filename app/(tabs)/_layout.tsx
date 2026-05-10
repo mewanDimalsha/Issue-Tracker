@@ -1,19 +1,21 @@
 import { useAuthStore } from "@/store/authStore";
+import { useThemeStore } from "@/store/themeStore";
 import { Tabs } from "expo-router";
 import { BarChart2, CircleUser, ListChecks } from "lucide-react-native";
 import { Pressable, Text } from "react-native";
 
 export default function TabLayout() {
   const logout = useAuthStore((s) => s.logout);
+  const isDark = useThemeStore((s) => s.mode === "dark");
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#3B82F6",
-        tabBarInactiveTintColor: "#9CA3AF",
+        tabBarActiveTintColor: "#60A5FA",
+        tabBarInactiveTintColor: isDark ? "#9CA3AF" : "#9CA3AF",
         tabBarStyle: {
-          backgroundColor: "#ffffff",
-          borderTopColor: "#E5E7EB",
+          backgroundColor: isDark ? "#111827" : "#ffffff",
+          borderTopColor: isDark ? "#1F2937" : "#E5E7EB",
           borderTopWidth: 1,
         },
         tabBarLabelStyle: {
@@ -21,12 +23,12 @@ export default function TabLayout() {
           fontWeight: "600",
         },
         headerStyle: {
-          backgroundColor: "#ffffff",
+          backgroundColor: isDark ? "#111827" : "#ffffff",
         },
         headerTitleStyle: {
           fontWeight: "700",
           fontSize: 18,
-          color: "#111827",
+          color: isDark ? "#F9FAFB" : "#111827",
         },
         headerShadowVisible: false,
       }}
@@ -41,7 +43,9 @@ export default function TabLayout() {
           headerRight: () => (
             <Pressable
               onPress={logout}
-              className="mr-4 px-3 py-1 bg-red-50 rounded-lg"
+              className={`mr-4 px-3 py-1 rounded-lg ${
+                isDark ? "bg-red-900/40" : "bg-red-50"
+              }`}
             >
               <Text className="text-red-500 text-sm font-semibold">Logout</Text>
             </Pressable>
@@ -59,7 +63,9 @@ export default function TabLayout() {
           headerRight: () => (
             <Pressable
               onPress={logout}
-              className="mr-4 px-3 py-1 bg-red-50 rounded-lg"
+              className={`mr-4 px-3 py-1 rounded-lg ${
+                isDark ? "bg-red-900/40" : "bg-red-50"
+              }`}
             >
               <Text className="text-red-500 text-sm font-semibold">Logout</Text>
             </Pressable>
