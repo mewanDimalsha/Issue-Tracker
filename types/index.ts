@@ -25,3 +25,10 @@ export interface FilterState {
   status: IssueStatus | "all";
   priority: IssuePriority | "all";
 }
+//Offline sync
+export interface SyncQueueItem {
+  id: string;
+  action: "create" | "update" | "resolve";
+  issue: Partial<Issue>;
+  timestamp: string; // ISO date string
+}
