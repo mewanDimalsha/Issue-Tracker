@@ -1,3 +1,4 @@
+import StatCard from "@/components/statCard";
 import { useIssueStore } from "@/store/issueStore";
 import { router } from "expo-router";
 import { useEffect } from "react";
@@ -9,7 +10,6 @@ import {
   Text,
   View,
 } from "react-native";
-
 export default function DashboardScreen() {
   const { issues, isLoading, error, lastSynced, syncQueue, fetchIssues } =
     useIssueStore();
@@ -147,23 +147,6 @@ export default function DashboardScreen() {
         </Pressable>
       )}
     </ScrollView>
-  );
-}
-function StatCard({
-  label,
-  count,
-  color,
-}: {
-  label: string;
-  count: number;
-  color: string;
-}) {
-  return (
-    <View className="flex-1 bg-white rounded-2xl p-4 border border-gray-100">
-      <View className={`w-2 h-2 rounded-full ${color} mb-3`} />
-      <Text className="text-2xl font-bold text-gray-900">{count}</Text>
-      <Text className="text-xs text-gray-500 mt-1">{label}</Text>
-    </View>
   );
 }
 

@@ -15,7 +15,7 @@ import {
 export default function IssuesScreen() {
   const {
     fetchIssues,
-    getFilteredIssues,
+    issues,
     setFilters,
     clearFilters,
     filters,
@@ -30,11 +30,24 @@ export default function IssuesScreen() {
   }, []);
   const debouncedSearch = useDebounce(searchText, 300);
 
+  const filteredIssues = issues.filter((issue) => {
+    const matchesSearch =
+      filters.search.trim() === "" ||
+      issue.title.toLowerCase().includes(filters.search.toLowerCase()) ||
+      issue.description.toLowerCase().includes(filters.search.toLowerCase());
+
+    const matchesStatus =
+      filters.status === "all" || issue.status === filters.status;
+
+    const matchesPriority =
+      filters.priority === "all" || issue.priority === filters.priority;
+
+    return matchesSearch && matchesStatus && matchesPriority;
+  });
+
   useEffect(() => {
     setFilters({ search: debouncedSearch });
   }, [debouncedSearch]);
-
-  const issues = getFilteredIssues();
 
   return (
     <View className="flex-1 bg-gray-50">
@@ -136,7 +149,7 @@ export default function IssuesScreen() {
 
       {/* List */}
       <FlatList
-        data={issues}
+        data={filteredIssues}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ padding: 16, gap: 10 }}
         refreshControl={
