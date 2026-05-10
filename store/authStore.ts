@@ -53,6 +53,9 @@ export const useAuthStore = create<AuthStore>()(
       fieldErrors: {},
 
       login: async (email: string, password: string) => {
+        const normalizedEmail = email.trim().toLowerCase();
+        const normalizedPassword = password.trim();
+
         // clear previous errors, start loading
         set({ isLoading: true, error: null, fieldErrors: {} });
 
@@ -60,7 +63,10 @@ export const useAuthStore = create<AuthStore>()(
         await new Promise((resolve) => setTimeout(resolve, 800));
 
         // step 1 — zod validates format
-        const result = loginSchema.safeParse({ email, password });
+        const result = loginSchema.safeParse({
+          email: normalizedEmail,
+          password: normalizedPassword,
+        });
 
         if (!result.success) {
           // convert zod errors into a field → message map
@@ -80,7 +86,7 @@ export const useAuthStore = create<AuthStore>()(
         // result.data is the validated + typed data from Zod
         const found = MOCK_USERS.find(
           (u) =>
-            u.email === result.data.email &&
+            u.email.toLowerCase() === result.data.email.toLowerCase() &&
             u.password === result.data.password,
         );
 

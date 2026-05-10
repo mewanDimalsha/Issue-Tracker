@@ -11,10 +11,17 @@ function AuthGuard() {
   const segments = useSegments();
 
   useEffect(() => {
+    setHasHydrated(useAuthStore.persist.hasHydrated());
+    const unsubscribeOnHydrate = useAuthStore.persist.onHydrate(() => {
+      setHasHydrated(false);
+    });
     const unsubscribe = useAuthStore.persist.onFinishHydration(() => {
       setHasHydrated(true);
     });
-    return unsubscribe;
+    return () => {
+      unsubscribeOnHydrate();
+      unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
